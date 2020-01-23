@@ -1,0 +1,39 @@
+Error: invalid extraction numbers repeated, see what follows: 
+Error Found:
+   e.bits.year: 1900
+   e.bits.month: 1
+   e.bits.day: 20
+   e.bits.a: 73
+   e.bits.b: 43
+   e.bits.c: 73
+   e.bits.d: 66
+   e.bits.e: 69
+   e.bits.ruota: 1
+Error: at position 0x00002EAB.
+Bari	72	43	73	66	69
+Error: invalid extraction numbers repeated, see what follows: 
+Error Found:
+   e.bits.year: 1900
+   e.bits.month: 6
+   e.bits.day: 16
+   e.bits.a: 23
+   e.bits.b: 19
+   e.bits.c: 30
+   e.bits.d: 23
+   e.bits.e: 7
+   e.bits.ruota: 9
+Error: at position 0x00002F59.
+Torino	23	19	30	33	7
+Error: invalid extraction numbers repeated, see what follows: 
+Error Found:
+   e.bits.year: 1951
+   e.bits.month: 12
+   e.bits.day: 28
+   e.bits.a: 5
+   e.bits.b: 63
+   e.bits.c: 21
+   e.bits.d: 63
+   e.bits.e: 56
+   e.bits.ruota: 7
+Error: at position 0x00008801.
+Palermo	5	63	21	83	56
