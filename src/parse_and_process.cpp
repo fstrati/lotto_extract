@@ -12,6 +12,7 @@
 #include <vector>
 #include <errno.h>
 #include <cstdlib>
+#include <map>
 #include <boost/filesystem.hpp>
 #include <boost/tokenizer.hpp>
 
@@ -725,20 +726,47 @@ static void spool_freq_ambi_first_number(uint32_t number_to_print)
 				continue;
 			}
 			ex_vec.shrink_to_fit();
-			sort_extractions_by_ambo_then_date(ex_vec);
+
+			std::map<key2,std::vector<extraction_t>> ambi_freq;
+			ambi_freq.clear();
 			for( const auto& ee : ex_vec )
 			{
-				std::fprintf(out_file,"Freq: %d, ambo [%02d,%02d], data %04d-%02d-%02d Ruota: %s\n",frequency_bin,
-						               (uint8_t) ee.bits.a,(uint8_t) ee.bits.b,\
-									   (uint16_t) ee.bits.year,(uint8_t) ee.bits.month,(uint8_t) ee.bits.day, \
-									   convert_ruota_to_string((ruota_t) ee.bits.ruota).c_str());
-				kounter++;
-				if( kounter > number_to_print )
+				key2 key;
+				key[0] = ee.bits.a;
+				key[1] = ee.bits.b;
+				std::map<key2,std::vector<extraction_t>>::iterator it = ambi_freq.find(key);
+				if( it != ambi_freq.end() )
 				{
-					do_exit = true;
-					break;
+					(it->second).push_back(ee);
+				}
+				else // not found
+				{
+					std::vector<extraction_t> ex_vec_inner;
+					ex_vec_inner.clear();
+					ex_vec_inner.push_back(ee);
+					ambi_freq[key] = ex_vec_inner;
 				}
 			}
+			for( auto& ambo : ambi_freq )
+			{
+				sort_extractions(ambo.second);
+
+				if( ambo.second.size() >= 1 )
+				{
+					extraction_t ee = ambo.second[ambo.second.size()-1];
+					std::fprintf(out_file,"Freq: %d, ambo [%02d,%02d], data %04d-%02d-%02d Ruota: %s\n",frequency_bin,
+							               (uint8_t) ee.bits.a,(uint8_t) ee.bits.b,\
+										   (uint16_t) ee.bits.year,(uint8_t) ee.bits.month,(uint8_t) ee.bits.day, \
+										   convert_ruota_to_string((ruota_t) ee.bits.ruota).c_str());
+					kounter++;
+					if( kounter > number_to_print )
+					{
+						do_exit = true;
+						break;
+					}
+				}
+			}
+
 			frequency_bin++;
 		}
 		while(!do_exit && (frequency_bin <= 10000));
@@ -780,21 +808,48 @@ static void spool_freq_terni_first_number(uint32_t number_to_print)
 				continue;
 			}
 			ex_vec.shrink_to_fit();
-			// !!! strange hard fault from what follows, commented out...
-			// sort_extractions_by_terno_then_date(ex_vec);
+
+			std::map<key3,std::vector<extraction_t>> terni_freq;
+			terni_freq.clear();
 			for( const auto& ee : ex_vec )
 			{
-				std::fprintf(out_file,"Freq: %d, terno [%02d,%02d,%02d], data %04d-%02d-%02d Ruota: %s\n",frequency_bin,
-						               (uint8_t) ee.bits.a,(uint8_t) ee.bits.b,(uint8_t) ee.bits.c,\
-									   (uint16_t) ee.bits.year,(uint8_t) ee.bits.month,(uint8_t) ee.bits.day, \
-									   convert_ruota_to_string((ruota_t) ee.bits.ruota).c_str());
-				kounter++;
-				if( kounter > number_to_print )
+				key3 key;
+				key[0] = ee.bits.a;
+				key[1] = ee.bits.b;
+				key[2] = ee.bits.c;
+				std::map<key3,std::vector<extraction_t>>::iterator it = terni_freq.find(key);
+				if( it != terni_freq.end() )
 				{
-					do_exit = true;
-					break;
+					(it->second).push_back(ee);
+				}
+				else // not found
+				{
+					std::vector<extraction_t> ex_vec_inner;
+					ex_vec_inner.clear();
+					ex_vec_inner.push_back(ee);
+					terni_freq[key] = ex_vec_inner;
 				}
 			}
+			for( auto& terno : terni_freq )
+			{
+				sort_extractions(terno.second);
+
+				if( terno.second.size() >= 1 )
+				{
+					extraction_t ee = terno.second[terno.second.size()-1];
+					std::fprintf(out_file,"Freq: %d, terno [%02d,%02d,%02d], data %04d-%02d-%02d Ruota: %s\n",frequency_bin,
+							               (uint8_t) ee.bits.a,(uint8_t) ee.bits.b,(uint8_t) ee.bits.c,\
+										   (uint16_t) ee.bits.year,(uint8_t) ee.bits.month,(uint8_t) ee.bits.day, \
+										   convert_ruota_to_string((ruota_t) ee.bits.ruota).c_str());
+					kounter++;
+					if( kounter > number_to_print )
+					{
+						do_exit = true;
+						break;
+					}
+				}
+			}
+
 			frequency_bin++;
 		}
 		while(!do_exit && (frequency_bin <= 10000));
